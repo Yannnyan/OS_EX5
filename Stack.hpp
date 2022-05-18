@@ -44,7 +44,9 @@ namespace ex4
         private:
             str_Node * head;
             size_t size;
-
+            int fd;
+            long page_size;
+            
             string TOP1();
             string POP1();
 

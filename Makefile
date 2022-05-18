@@ -15,10 +15,16 @@ example: example.o
 writeFile: writeFile.o
 	$(CC) $^ -o $@
 
+main: main.o heap_funcs.o
+	$(CC) $^ -o $@
+
+Test: Test_Stack_mmap.o Stack.o
+	$(CC) $^ -o $@
+
 %.o : %.cpp
 	$(CC) -o $@ -c $^ $(CFLAGS)
 
 PHONY: clean
 
 clean:
-	rm -f *.o Server Client example writeFile
+	rm -f *.o Server Client example writeFile Test stack.txt file.txt main
