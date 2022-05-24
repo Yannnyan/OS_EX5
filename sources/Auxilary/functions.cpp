@@ -1,6 +1,7 @@
 #include "functions.hpp"
 #include <string.h>
 #include <stdlib.h>
+#include <string>
 
 
 int startsWith(char * target, char * prefix)
@@ -54,9 +55,26 @@ char * getArg(char * target)
     return arg;
 }
 
+char * convert_string_to_array(std::string const & str)
+{
+    char * arr = (char *)calloc(BUFFERSIZE, sizeof(char));
+    for(size_t i=0; i< str.size(); i++)
+    {
+        arr[i] = str.at(i);
+    }
+    arr[str.size()] = '\0';
+    return arr;
+}
 
-
-
+std::string convertArrToString(char inp[BUFFERSIZE])
+{
+    std::string str;
+    for (size_t i=0; i< strlen(inp); i++)
+    {
+        str.push_back(inp[i]);
+    }
+    return str;
+}
 
 
 

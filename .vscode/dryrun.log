@@ -1,8 +1,5 @@
 make --dry-run --keep-going --print-directory
 make: Entering directory '/home/yan/OS_EX5'
-g++ -o Server.o -c Server.cpp -Wall -g -pthread
-g++ Server.o -o Server -Wall -g -pthread
-g++ -o Client.o -c Client.cpp -Wall -g -pthread
-g++ Client.o -o Client -Wall -g -pthread
+g++ -Wall -g -pthread  objects//Server.o objects//Stack.o objects//heap_funcs.o objects//functions.o objects//process.o -o Server
 make: Leaving directory '/home/yan/OS_EX5'
  

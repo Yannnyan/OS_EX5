@@ -1,3 +1,5 @@
+#ifndef STACK_HPP
+#define STACK_HPP
 
 #include <iostream>
 #include <string>
@@ -19,6 +21,7 @@ namespace ex4
             {
                 return this->next;
             }
+            
             
         public:
             // construct an empty node and set the next to null
@@ -44,9 +47,11 @@ namespace ex4
         private:
             str_Node * head;
             size_t size;
+            int fd;
 
-            string TOP1();
-            string POP1();
+            void PUSH_SRC(string text); 
+            string POP_SRC();
+            string TOP_SRC();
 
         public:
             // constructor initializes stack size to 10
@@ -65,6 +70,7 @@ namespace ex4
             // outputs the Stack to ostream for printing purposes.
             friend ostream & operator<<(ostream & os, Stack stack);
             // getters and setters
+            void set_fd(int fd);
             // get the size of the stack
             size_t get_size(){return this->size;}
             // get pointer to the head of the stack
@@ -73,4 +79,4 @@ namespace ex4
     };
 }
 
-
+#endif

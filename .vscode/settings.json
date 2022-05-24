@@ -2,6 +2,9 @@
     "makefile.extensionOutputFolder": "./.vscode",
     "files.associations": {
         "stdexcept": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "string": "cpp",
+        "deque": "cpp",
+        "vector": "cpp"
     }
 }

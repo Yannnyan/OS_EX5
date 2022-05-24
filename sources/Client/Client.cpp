@@ -42,6 +42,7 @@ char * process_input(int conn_sock)
         perror("ERROR: failed to send message to server.");
         exit(1);
     }
+    
 }
 
 int main(int argc, char *argv[])

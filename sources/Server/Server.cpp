@@ -14,7 +14,10 @@
 #include <arpa/inet.h>
 #include <sys/wait.h>
 #include <signal.h>
-#include <process.hpp>
+#include "../Process/process.hpp"
+#include "../Heap/heap_funcs.hpp"
+#include "../Stack/Stack.hpp"
+
 
 #define PORT "3490"  // the port users will be connecting to
 
@@ -51,7 +54,8 @@ int main(void)
     int yes=1;
     char s[INET6_ADDRSTRLEN];
     int rv;
-
+    map_memory();
+    ex4::Stack * stack = (ex4::Stack *)_malloc(sizeof(ex4::Stack));
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -105,8 +109,6 @@ int main(void)
         exit(1);
     }
 
-    printf("server: opening a file for communication between the server and the processes.\n");
-    int target_fd = open_file("file.txt");
     printf("server: waiting for connections...\n");
 
     while(1) {  // main accept() loop
@@ -125,12 +127,11 @@ int main(void)
         if (!fork()) { // this is the child process
             close_file(sockfd); // child doesn't need the listener
             // the child runs in infinite loop listening to the client he received.
-            process_function(conn_fd, target_fd); 
-            close_file(new_fd);
+            process_function(conn_fd, stack);
             exit(0);
         }
-        close(new_fd);  // parent doesn't need this
     }
+    clean_mem();
 
     return 0;
 }
