@@ -1,22 +1,26 @@
 #include "process.hpp"
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include "../Heap/heap_funcs.hpp"
 #include "../Auxilary/functions.hpp"
 #include "../Stack/Stack.hpp"
-
+#include <sys/socket.h>
+#include <sys/types.h>
 
 // the conn_fd is the socket connection with the client
 // the target_fd is the socket connection with the target file, that the server reads from.
 void process_function(int conn_fd, ex4::Stack * stack)
 {
-    char * buffer = nullptr;
+    char buffer[BUFFERSIZE];
     while(1)
     {
-        buffer = read_message(conn_fd, BUFFERSIZE-1);
+        printf("reading message\n");
+        read_message(conn_fd, buffer, BUFFERSIZE-1);
+        printf("processing input\n");
         process_input(buffer, conn_fd, stack);
-        free(buffer);
     }
 }
 
@@ -25,29 +29,36 @@ void process_function(int conn_fd, ex4::Stack * stack)
 // then it writes the message to the target_fd
 void process_input(char * buffer, int conn_fd, ex4::Stack * stack)
 {
+    puts(buffer);
     if(startsWith(buffer, (char *)"POP"))
     {
-        string str = stack->POP();
-        char * buf = convert_string_to_array(str);
-        write_message(conn_fd, buf, str.size());
+        char * buf = stack->POP();
+        write_message(conn_fd, buf, strlen(buf));
         free(buf);
         return;
     }
     if(startsWith(buffer, (char *)"TOP"))
     {
-        string str = stack->TOP();
-        char * buf = convert_string_to_array(str);
-        write_message(conn_fd, buf, str.size());
-        free(buf);
+        char * buf = stack->TOP();
+        write_message(conn_fd, buf, strlen(buf));
+        // free(buf);
         return;
     }
     if(startsWith(buffer, (char *)"PUSH"))
     {
-        char * inp = getArg(buffer);
-        stack->PUSH( convertArrToString(inp));
-        free(inp);
-        char * prompt = (char *)"Pushed into stack.";
-        write_message(conn_fd, prompt, sizeof(prompt));
+        puts("PUSH");
+        char garbage[BUFFERSIZE];
+        char arg[BUFFERSIZE]; 
+        memset(garbage,0 , BUFFERSIZE);
+        memset(arg,0, BUFFERSIZE);
+        sscanf(buffer, "%s %1024[^\n]", garbage, arg);
+        // sscanf(buffer, "%s", arg);
+        puts(arg);
+        arg[strlen(arg)] = '\0';
+        // arg = getArg(buffer);
+        stack->PUSH( arg );
+        char * prompt = (char *)"Pushed into stack.\0";
+        write_message(conn_fd, prompt, sizeof(prompt) + 1);
         return;
     }
     else
@@ -63,20 +74,24 @@ void process_input(char * buffer, int conn_fd, ex4::Stack * stack)
 
 void write_message(int conn_fd, char * message, size_t size)
 {
-    if ((write(conn_fd, message, size)) == -1 )
+    printf("sending message\n");
+    if ((send(conn_fd, message, size, 0)) == -1 )
     {
-        perror("write failed.");
+        perror("send failed.");
         return;
     }
 }
-char * read_message(int conn_fd, size_t num_bytes)
+char * read_message(int conn_fd, char * buffer,  size_t num_bytes)
 {
-    char * buffer = (char *)malloc(num_bytes+1);
-    if ((read(conn_fd, buffer ,num_bytes)) == -1)
+    memset(buffer, 0, BUFFERSIZE);
+    int r = 0;
+    if ((r = recv(conn_fd, buffer ,num_bytes, 0)) == -1)
     {
-        perror("read failed.");
+        perror("recv failed.");
         return (char*)"";
     }
+    buffer[num_bytes] = '\0';
+    printf("received %d bytes\n", r);
     return buffer;
 }
 

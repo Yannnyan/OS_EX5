@@ -1,6 +1,7 @@
 #ifndef PROCESS_HPP_
 #define PROCESS_HPP_
-
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <stdlib.h>
 #include "../Stack/Stack.hpp"
 
@@ -8,7 +9,7 @@
 // this function writes a message into the file descriptor specified.
 void write_message(int conn_fd, char * message, size_t size);
 // reads num_bytes bytes from conn_fd 
-char * read_message(int conn_fd, size_t num_bytes);
+char * read_message(int conn_fd, char * buffer, size_t num_bytes);
 // the function that a process runs upon
 void process_function(int conn_fd, ex4::Stack * stack);
 // open a file and returns a file descriptor for the open file.

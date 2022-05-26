@@ -56,6 +56,7 @@ int main(void)
     int rv;
     map_memory();
     ex4::Stack * stack = (ex4::Stack *)_malloc(sizeof(ex4::Stack));
+    stack->_Stack();
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -112,7 +113,7 @@ int main(void)
     printf("server: waiting for connections...\n");
 
     while(1) {  // main accept() loop
-        sin_size = sizeof their_addr;
+        sin_size = sizeof(their_addr);
         conn_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
         if (conn_fd == -1) {
             perror("accept");
@@ -121,7 +122,7 @@ int main(void)
 
         inet_ntop(their_addr.ss_family,
             get_in_addr((struct sockaddr *)&their_addr),
-            s, sizeof s);
+            s, sizeof(s));
         printf("server: got connection from %s\n", s);
 
         if (!fork()) { // this is the child process

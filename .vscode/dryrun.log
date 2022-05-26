@@ -1,5 +1,12 @@
-make --dry-run --keep-going --print-directory
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/yan/OS_EX5'
+g++ -Wall -g -pthread  -c sources/Server/Server.cpp -o objects//Server.o
+g++ -Wall -g -pthread  -c sources/Stack/Stack.cpp -o objects//Stack.o
+g++ -Wall -g -pthread  -c sources/Heap/heap_funcs.cpp -o objects//heap_funcs.o
+g++ -Wall -g -pthread  -c sources/Auxilary/functions.cpp -o objects//functions.o
+g++ -Wall -g -pthread  -c sources/Process/process.cpp -o objects//process.o
 g++ -Wall -g -pthread  objects//Server.o objects//Stack.o objects//heap_funcs.o objects//functions.o objects//process.o -o Server
+g++ -Wall -g -pthread  -c sources/Client/Client.cpp -o objects//Client.o
+g++ -Wall -g -pthread  objects//Client.o -o Client
 make: Leaving directory '/home/yan/OS_EX5'
  

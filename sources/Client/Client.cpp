@@ -31,14 +31,21 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-char * process_input(int conn_sock)
+void process_input(int conn_sock)
 {
-    int r;
+    // int r;
     char buffer[1024];
     memset(buffer, 0, BUFFERSIZE);
-    r = read(0, buffer, BUFFERSIZE);
-    if (send(conn_sock, buffer, r, 0) == -1)
+    // read from stdin
+    if((scanf("%1023[^\n]", buffer)) == -1)
     {
+        
+        perror("ERROR: failed to read message from stdin.");
+        exit(1);
+    }
+    // printf("%s", buffer);
+    if (send(conn_sock, buffer, strlen(buffer) + 1, 0) == -1)
+    { 
         perror("ERROR: failed to send message to server.");
         exit(1);
     }
@@ -92,15 +99,15 @@ int main(int argc, char *argv[])
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
             s, sizeof s);
     printf("client: connecting to %s\n", s);
-
     freeaddrinfo(servinfo); // all done with this structure
     while(1)
     {
+        printf("processing input\n");
         process_input(sockfd);
 
         if ((numbytes = recv(sockfd, buf, BUFFERSIZE-1, 0)) == -1) {
             perror("recv");
-            exit(1);
+            break;
         }
 
         buf[numbytes] = '\0';
