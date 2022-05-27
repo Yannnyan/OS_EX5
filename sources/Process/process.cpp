@@ -15,13 +15,21 @@
 void process_function(int conn_fd, ex4::Stack * stack)
 {
     char buffer[BUFFERSIZE];
+    char * sendbuffer = (char *)malloc(BUFFERSIZE);
     while(1)
     {
         printf("reading message\n");
-        read_message(conn_fd, buffer, BUFFERSIZE-1);
-        printf("processing input\n");
+        if(recv(conn_fd, buffer, BUFFERSIZE, 0) == -1)
+        {
+            printf("error");
+            break;
+
+        }
+        printf("[SERVER] Got message: %s", buffer);
         process_input(buffer, conn_fd, stack);
     }
+    free(sendbuffer);
+    printf("out\n");
 }
 
 // this function receives a message
@@ -29,33 +37,28 @@ void process_function(int conn_fd, ex4::Stack * stack)
 // then it writes the message to the target_fd
 void process_input(char * buffer, int conn_fd, ex4::Stack * stack)
 {
-    puts(buffer);
     if(startsWith(buffer, (char *)"POP"))
     {
         char * buf = stack->POP();
-        write_message(conn_fd, buf, strlen(buf));
+        write_message(conn_fd, buf, strlen(buf) +1);
         free(buf);
         return;
     }
     if(startsWith(buffer, (char *)"TOP"))
     {
         char * buf = stack->TOP();
-        write_message(conn_fd, buf, strlen(buf));
+        write_message(conn_fd, buf, strlen(buf) +1);
         // free(buf);
         return;
     }
     if(startsWith(buffer, (char *)"PUSH"))
     {
-        puts("PUSH");
         char garbage[BUFFERSIZE];
         char arg[BUFFERSIZE]; 
         memset(garbage,0 , BUFFERSIZE);
         memset(arg,0, BUFFERSIZE);
         sscanf(buffer, "%s %1024[^\n]", garbage, arg);
-        // sscanf(buffer, "%s", arg);
-        puts(arg);
         arg[strlen(arg)] = '\0';
-        // arg = getArg(buffer);
         stack->PUSH( arg );
         char * prompt = (char *)"Pushed into stack.\0";
         write_message(conn_fd, prompt, sizeof(prompt) + 1);
@@ -66,7 +69,7 @@ void process_input(char * buffer, int conn_fd, ex4::Stack * stack)
         perror("ERROR: INSTRUCTION DOESN'T MATCH.");
         perror(buffer);
         char * prompt = (char *)"ERROR: INSTRUCTION DOESN'T MATCH.";
-        write_message(conn_fd, prompt, sizeof(prompt));
+        write_message(conn_fd, prompt, sizeof(prompt) + 1);
         return;
     }
 
@@ -77,20 +80,23 @@ void write_message(int conn_fd, char * message, size_t size)
     printf("sending message\n");
     if ((send(conn_fd, message, size, 0)) == -1 )
     {
+        printf("send failed.\n");
         perror("send failed.");
         return;
     }
 }
 char * read_message(int conn_fd, char * buffer,  size_t num_bytes)
 {
+    char * buf[BUFFERSIZE];
     memset(buffer, 0, BUFFERSIZE);
     int r = 0;
-    if ((r = recv(conn_fd, buffer ,num_bytes, 0)) == -1)
+    if ((r = recv(conn_fd, buf ,BUFFERSIZE, 0)) == -1)
     {
-        perror("recv failed.");
+        printf("recv failed.\n");
+        perror("recv failed.\n");
         return (char*)"";
     }
-    buffer[num_bytes] = '\0';
+    buffer[r] = '\0';
     printf("received %d bytes\n", r);
     return buffer;
 }

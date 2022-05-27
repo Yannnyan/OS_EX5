@@ -32,9 +32,7 @@ ex4::str_Node::str_Node(char * str)
 }
 str_Node * ex4::str_Node::getNext()
 {
-    // pthread_mutex_lock(&lock1);
     str_Node * ret = this->next;
-    // pthread_mutex_unlock(&lock1);
     return ret;
 }
 // set the next node.
@@ -64,7 +62,6 @@ void ex4::str_Node::setData(char * data)
     {
         perror("ERROR: char * size is too long! ");
     }
-    puts("ended setData.");
     this->data[i] = '\0';
 }
 void ex4::Stack::add_node(char *  data)
@@ -73,13 +70,10 @@ void ex4::Stack::add_node(char *  data)
     to_add->setData(data);
     to_add->setNext((str_Node *)nullptr);
     str_Node * current = this->head;
-    puts("loop\n");
     while(current->getNext() != nullptr)
     {
-        puts("loop\n");
         current = current->getNext();
     }
-    puts("loop\n");
     current->setNext(to_add);
     
 }
@@ -155,10 +149,8 @@ char * ex4::Stack::POP_SRC()
     }
     prev->setNext((str_Node *)nullptr);
     char * str = current->getData();
-    // printf("%ld\n", strlen(str));
     char * ret = (char *) malloc(strlen(str)+1);
     strncpy(ret, str, strlen(str) + 1);
-    // puts(ret);
     _free(current);
     this->size -=1;
     return ret;
@@ -171,7 +163,6 @@ void ex4::Stack::PUSH_SRC(char * inp)
         return;
     }
     add_node(inp);
-    // printf("%p\n", this->head);
     this->size+=1;
 }
 

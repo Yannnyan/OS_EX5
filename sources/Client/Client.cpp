@@ -18,9 +18,10 @@
 
 #define PORT "3490" // the port client will be connecting to 
 
-#define MAXDATASIZE 100 // max number of bytes we can get at once 
+#define MAXDATASIZE 1024 // max number of bytes we can get at once 
+#define BUFFERSIZE 1024
 
-size_t BUFFERSIZE = 1024;
+char buffer[BUFFERSIZE];
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
 {
@@ -31,25 +32,23 @@ void *get_in_addr(struct sockaddr *sa)
     return &(((struct sockaddr_in6*)sa)->sin6_addr);
 }
 
-void process_input(int conn_sock)
+// return allocated char array that the user has inputted into the system.
+void get_input()
 {
-    // int r;
-    char buffer[1024];
+    char c;
     memset(buffer, 0, BUFFERSIZE);
-    // read from stdin
-    if((scanf("%1023[^\n]", buffer)) == -1)
+    printf(">: ");
+    for(int i=0; i< BUFFERSIZE; i++)
     {
-        
-        perror("ERROR: failed to read message from stdin.");
-        exit(1);
+        c = getc(stdin);
+        if( c== '\n')
+        {
+            buffer[i] = '\0';
+            break;
+        }
+        buffer[i] = c;
     }
-    // printf("%s", buffer);
-    if (send(conn_sock, buffer, strlen(buffer) + 1, 0) == -1)
-    { 
-        perror("ERROR: failed to send message to server.");
-        exit(1);
-    }
-    
+    printf("[CLIENT]: got message from prompt.\n");
 }
 
 int main(int argc, char *argv[])
@@ -102,8 +101,12 @@ int main(int argc, char *argv[])
     freeaddrinfo(servinfo); // all done with this structure
     while(1)
     {
-        printf("processing input\n");
-        process_input(sockfd);
+        get_input();
+        if(send(sockfd, buffer, strlen(buffer) + 1, 0) == -1)
+        {
+            perror("ERROR: cannot send the message");
+            break;
+        }
 
         if ((numbytes = recv(sockfd, buf, BUFFERSIZE-1, 0)) == -1) {
             perror("recv");
@@ -112,7 +115,7 @@ int main(int argc, char *argv[])
 
         buf[numbytes] = '\0';
 
-        printf("client: received '%s'\n",buf);
+        printf("[CLIENT]: received '%s', number of bytes: %d\n",buf, numbytes);
     }
     
     
