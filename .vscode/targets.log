@@ -6,7 +6,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun May 29 07:20:33 2022
+# Make data base, printed on Sun May 29 11:26:39 2022
 
 # Variables
 
@@ -73,7 +73,7 @@ OBJECTS_PROCESS = $(subst sources/Process,$(OBJECT_PATH),$(subst .cpp,.o,$(SOURC
 # environment
 VSCODE_LOG_STACK = false
 # environment
-VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-bf66ab22-5e54-423c-a2e2-c49b0b2ea902.sock
+VSCODE_IPC_HOOK_CLI = /tmp/vscode-ipc-df57ee1a-28b8-41b2-b91e-666ea15be0ed.sock
 # makefile (from 'Makefile', line 14)
 SOURCES_HEAP = $(wildcard $(SOURCE_HEAP_PATH)/*.cpp)
 # default
@@ -93,7 +93,7 @@ PWD = /home/yan/OS_EX5
 # default
 .LOADED := 
 # environment
-WSL_INTEROP = /run/WSL/12_interop
+WSL_INTEROP = /run/WSL/3300_interop
 # makefile (from 'Makefile', line 18)
 SOURCES_PROCESS = $(wildcard $(SOURCE_PROCESS_PATH)/*.cpp)
 # environment
@@ -105,7 +105,7 @@ LESSCLOSE = /usr/bin/lesspipe %s %s
 # environment
 LOGNAME = yan
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # automatic
@@ -200,10 +200,8 @@ TERM = xterm-256color
 VSCODE_EXTHOST_WILL_SEND_SOCKET = true
 # environment
 WSL_DISTRO_NAME = Ubuntu-20.04
-# environment
-MOTD_SHOWN = update-motd
 # variable set hash-table stats:
-# Load=96/1024=9%, Rehash=0, Collisions=34/290=12%
+# Load=95/1024=9%, Rehash=0, Collisions=34/295=12%
 
 # Pattern-specific Variable Values
 
@@ -212,14 +210,14 @@ MOTD_SHOWN = update-motd
 # Directories
 
 # sources/Auxilary (device 2064, inode 82775): 4 files, no impossibilities.
-# . (device 2064, inode 79883): 19 files, no impossibilities.
+# . (device 2064, inode 79883): 21 files, no impossibilities.
 # sources/Process (device 2064, inode 75793): 4 files, no impossibilities.
 # sources/Heap (device 2064, inode 80009): 4 files, no impossibilities.
 # sources/Server (device 2064, inode 80011): 3 files, no impossibilities.
 # sources/Client (device 2064, inode 81339): 3 files, no impossibilities.
 # sources/Stack (device 2064, inode 80010): 4 files, no impossibilities.
 
-# 41 files, no impossibilities in 7 directories.
+# 43 files, no impossibilities in 7 directories.
 
 # Implicit Rules
 
@@ -236,14 +234,15 @@ all: Server Client
 #  Implicit rule search has been done.
 #  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
 
 # Not a target:
 sources/Client/Client.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-28 13:15:20.445768855
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 sources/Heap/heap_funcs.hpp:
@@ -254,9 +253,8 @@ sources/Heap/heap_funcs.hpp:
 
 Client: objects//Client.o
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.875910956
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 48):
 	$(CC) $(CFLAGS) $^ -o $@
 
@@ -267,9 +265,8 @@ Client: objects//Client.o
 
 objects//heap_funcs.o: sources/Heap/heap_funcs.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.455910949
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 72):
 	$(CC) $(CFLAGS) -c $< -o $@
 	
@@ -278,8 +275,8 @@ objects//heap_funcs.o: sources/Heap/heap_funcs.cpp sources/Auxilary/functions.hp
 TestRunner.o:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
- 
 #  File has not been updated.
+ 
 
 # Not a target:
 TestClient.o:
@@ -289,9 +286,8 @@ TestClient.o:
 
 objects//process.o: sources/Process/process.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.715910953
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 84):
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -303,6 +299,12 @@ testClient: TestRunner.o TestClient.o
 	$(CC) $(CFLAGS) $^ -o $@ 
 
 # Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
 Makefile:
 #  Implicit rule search has been done.
 #  Last modified 2022-05-24 18:44:37.085666727
@@ -311,9 +313,11 @@ Makefile:
 
 Server: objects//Server.o objects//Stack.o objects//heap_funcs.o objects//functions.o objects//process.o
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.795910955
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
 #  recipe to execute (from 'Makefile', line 45):
 	$(CC) $(CFLAGS) $^ -o $@
 
@@ -332,24 +336,22 @@ testServer: TestServer.o TestRunner.o objects//heap_funcs.o
 
 objects//Client.o: sources/Client/Client.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.815910955
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 81):
 	$(CC) $(CFLAGS) -c $< -o $@
 
 objects//functions.o: sources/Auxilary/functions.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.555910951
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 78):
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Not a target:
 sources/Server/Server.cpp:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-28 13:12:46.71576653
+#  Last modified 2022-05-29 08:29:58.787461787
 #  File has been updated.
 #  Successfully updated.
 
@@ -368,10 +370,9 @@ TestStack.o:
 
 # Not a target:
 sources/Process/process.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-28 13:54:29.335804377
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 .DEFAULT:
@@ -388,18 +389,36 @@ sources/Process/process.hpp:
 
 objects//Server.o: sources/Server/Server.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.285910947
+#  Implicit/static pattern stem: ''
+#  File does not exist.
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := objects//Server.o
+# automatic
+# % := 
+# automatic
+# * := 
+# automatic
+# + := sources/Server/Server.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
+# automatic
+# | := 
+# automatic
+# < := sources/Server/Server.cpp
+# automatic
+# ^ := sources/Server/Server.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
+# automatic
+# ? := sources/Server/Server.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=1/16=6%
 #  recipe to execute (from 'Makefile', line 75):
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Not a target:
 sources/Stack/Stack.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-28 14:19:08.365826744
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 clean:
 #  Phony target (prerequisite of .PHONY).
@@ -414,23 +433,20 @@ clean:
 
 # Not a target:
 sources/Heap/heap_funcs.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-28 15:44:58.345904626
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 sources/Auxilary/functions.cpp:
-#  Implicit rule search has been done.
-#  Last modified 2022-05-26 07:59:50.437550181
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 objects//Stack.o: sources/Stack/Stack.cpp sources/Auxilary/functions.hpp sources/Heap/heap_funcs.hpp sources/Process/process.hpp
 #  Implicit rule search has not been done.
-#  Last modified 2022-05-28 15:51:56.425910949
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 69):
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -468,19 +484,19 @@ sources/Auxilary/functions.hpp:
 #  Successfully updated.
 
 # files hash-table stats:
-# Load=34/1024=3%, Rehash=0, Collisions=7/104=7%
+# Load=34/1024=3%, Rehash=0, Collisions=7/105=7%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 70 / storage = 973 B / avg = 13 B
-# current buf: size = 8162 B / used = 973 B / count = 70 / avg = 13 B
+# strcache buffers: 1 (0) / strings = 69 / storage = 964 B / avg = 13 B
+# current buf: size = 8162 B / used = 964 B / count = 69 / avg = 13 B
 
-# strcache performance: lookups = 143 / hit rate = 51%
+# strcache performance: lookups = 146 / hit rate = 52%
 # hash-table stats:
-# Load=70/8192=1%, Rehash=0, Collisions=15/143=10%
-# Finished Make data base on Sun May 29 07:20:33 2022
+# Load=69/8192=1%, Rehash=0, Collisions=15/146=10%
+# Finished Make data base on Sun May 29 11:26:39 2022
 
  
