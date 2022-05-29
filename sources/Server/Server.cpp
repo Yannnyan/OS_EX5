@@ -23,6 +23,8 @@
 
 #define BACKLOG 10   // how many pending connections queue will hold
 
+int sockfd;
+int conn_sockets[10]; 
 void sigchld_handler(int s)
 {
     // waitpid() might overwrite errno, so we save and restore it:
@@ -33,6 +35,15 @@ void sigchld_handler(int s)
     errno = saved_errno;
 }
 
+void sig_abrt_handler(int s)
+{
+    clean_mem();
+    for(int i=0; i < 10 && conn_sockets[i] != 0; i++)
+    {
+        close(conn_sockets[i]);
+    }
+    close(sockfd);
+}
 
 // get sockaddr, IPv4 or IPv6:
 void *get_in_addr(struct sockaddr *sa)
@@ -46,11 +57,11 @@ void *get_in_addr(struct sockaddr *sa)
 
 int main(void)
 {
-    int sockfd, conn_fd;  // listen on sock_fd, new connection on new_fd
+    int conn_fd;  // listen on sock_fd, new connection on new_fd
     struct addrinfo hints, *servinfo, *p;
     struct sockaddr_storage their_addr; // connector's address information
     socklen_t sin_size;
-    struct sigaction sa;
+    struct sigaction sa;    
     int yes=1;
     char s[INET6_ADDRSTRLEN];
     int rv;
@@ -58,6 +69,11 @@ int main(void)
     ex4::Stack * stack = (ex4::Stack *)_malloc(sizeof(ex4::Stack));
     stack->_Stack();
     memset(&hints, 0, sizeof hints);
+    // giving a signal handler for cntrl c SIGQUIT or cntrl z SISTP
+    signal(SIGSTOP, sig_abrt_handler);
+    signal(SIGTSTP, sig_abrt_handler);
+    signal(SIGINT, sig_abrt_handler);
+    memset(conn_sockets, 0, sizeof(int) * 10);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE; // use my IP
@@ -111,13 +127,14 @@ int main(void)
     }
 
     printf("[SERVER]: waiting for connections...\n");
-
+    int i=0;
     while(1) {  // main accept() loop
         sin_size = sizeof(their_addr);
         conn_fd = accept(sockfd, (struct sockaddr *)&their_addr, &sin_size);
+        conn_sockets[(i++) % 10] = conn_fd;
         if (conn_fd == -1) {
             perror("accept");
-            continue;
+            break;
         }
 
         inet_ntop(their_addr.ss_family,
@@ -126,13 +143,13 @@ int main(void)
         printf("[SERVER]: got connection from %s\n", s);
 
         if (!fork()) { // this is the child process
-            close_file(sockfd); // child doesn't need the listener
+            close(sockfd); // child doesn't need the listener
             // the child runs in infinite loop listening to the client he received.
             process_function(conn_fd, stack);
             exit(0);
         }
     }
-    clean_mem();
+    // clean_mem();
 
     return 0;
 }

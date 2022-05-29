@@ -78,6 +78,7 @@ Block * find_free_block(size_t size)
         // printf("%p\n", (head_block)->next);
         return head_block + 1;
     }
+    Block * prev_block = head_block;
     Block * current_block = head_block;
     while(current_block)
     {
@@ -88,15 +89,17 @@ Block * find_free_block(size_t size)
             (current_block)->free = false;
             return ((current_block) + 1);
         }
+        prev_block = current_block;
         (current_block) = (current_block) -> next;
     }
     // not found good block of memory to re-use
     // allocate new memory
+    current_addr = ((char *)prev_block) + prev_block->size + BLOCK_SIZE;
     Block * b = (Block *) current_addr;
     (b)->free = false;
-    (b)->next = (head_block);
+    (b)->next = nullptr;
     (b)->size = size;
-    (head_block) = (b);
+    prev_block->next = b;
     current_addr += BLOCK_SIZE;
     current_addr += size;
     return (b + 1);
@@ -159,12 +162,12 @@ int num_bytes_untill_address(Block * addr)
 
 bool lock_block_in_mappedmem(void * addr)
 {
-    Block * block = ((Block *)addr) - 1;
-    int bytes = num_bytes_untill_address(block);
+    // Block * block = ((Block *)addr) - 1;
+    // int bytes = num_bytes_untill_address(block);
     fl.l_whence = SEEK_SET;
     fl.l_type = F_WRLCK;
-    fl.l_len = block->size;
-    fl.l_start = bytes;
+    fl.l_len = 0;
+    fl.l_start = 0;
     // this call should lock and wait if another process acquired the lock already.
     if(fcntl(fd, F_SETLKW, &fl) == -1)
     {
@@ -177,12 +180,12 @@ bool lock_block_in_mappedmem(void * addr)
 
 bool unlock_block_in_mappedmem(void * addr)
 {
-    Block * block = ((Block *)addr) - 1;
-    int bytes = num_bytes_untill_address(block);
+    // Block * block = ((Block *)addr) - 1;
+    // int bytes = num_bytes_untill_address(block);
     fl.l_whence = SEEK_SET;
     fl.l_type = F_UNLCK;
-    fl.l_len = block->size;
-    fl.l_start = bytes;    
+    fl.l_len = 0;
+    fl.l_start = 0;    
     if(fcntl(fd, F_SETLKW, &fl) == -1)
     {
         return false;

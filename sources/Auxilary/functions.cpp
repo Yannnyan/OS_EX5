@@ -52,6 +52,7 @@ char * getArg(char * target)
         index_arg++;
         i++;
     }
+    arg[index_arg] = '\0';
     return arg;
 }
 

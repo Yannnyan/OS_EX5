@@ -15,20 +15,21 @@
 void process_function(int conn_fd, ex4::Stack * stack)
 {
     char buffer[BUFFERSIZE];
-    char * sendbuffer = (char *)malloc(BUFFERSIZE);
+    // char * sendbuffer = (char *)malloc(BUFFERSIZE);
     while(1)
     {
-        printf("reading message\n");
+        printf("[SERVER] Reading message\n");
+        memset(buffer, 0 , BUFFERSIZE);
         if(recv(conn_fd, buffer, BUFFERSIZE, 0) == -1)
         {
-            printf("error");
+            printf("error\n");
             break;
 
         }
-        printf("[SERVER] Got message: %s", buffer);
+        printf("[SERVER] Got message: %s\n", buffer);
         process_input(buffer, conn_fd, stack);
     }
-    free(sendbuffer);
+    // free(sendbuffer);
     printf("out\n");
 }
 
@@ -40,28 +41,43 @@ void process_input(char * buffer, int conn_fd, ex4::Stack * stack)
     if(startsWith(buffer, (char *)"POP"))
     {
         char * buf = stack->POP();
-        write_message(conn_fd, buf, strlen(buf) +1);
+        if(send(conn_fd, buf, strlen(buf) + 1, 0) == -1)
+        {
+            printf("ERROR: cannot send message. POP");
+            close(conn_fd);
+            exit(1);
+        }
         free(buf);
         return;
     }
     if(startsWith(buffer, (char *)"TOP"))
     {
         char * buf = stack->TOP();
-        write_message(conn_fd, buf, strlen(buf) +1);
+        if(send(conn_fd, buf, strlen(buf) + 1, 0) == -1)
+        {
+            printf("ERROR: cannot send message. TOP");
+            close(conn_fd);
+            exit(1);
+        }
         // free(buf);
         return;
     }
     if(startsWith(buffer, (char *)"PUSH"))
     {
-        char garbage[BUFFERSIZE];
-        char arg[BUFFERSIZE]; 
-        memset(garbage,0 , BUFFERSIZE);
-        memset(arg,0, BUFFERSIZE);
-        sscanf(buffer, "%s %1024[^\n]", garbage, arg);
+        char * arg; 
+        buffer[strlen(buffer)] = '\0';
+        arg = getArg(buffer);
         arg[strlen(arg)] = '\0';
         stack->PUSH( arg );
-        char * prompt = (char *)"Pushed into stack.\0";
-        write_message(conn_fd, prompt, sizeof(prompt) + 1);
+        char * prompt = (char *)"Pushed into stack.";
+        free(arg);
+        if(send(conn_fd, prompt, strlen(prompt) + 1, 0) == -1)
+        {
+            printf("ERROR: cannot send message. PUSH");
+            close(conn_fd);
+            exit(1);
+        }
+        puts("[SERVER] Sent message to client.\n");
         return;
     }
     else
@@ -69,60 +85,16 @@ void process_input(char * buffer, int conn_fd, ex4::Stack * stack)
         perror("ERROR: INSTRUCTION DOESN'T MATCH.");
         perror(buffer);
         char * prompt = (char *)"ERROR: INSTRUCTION DOESN'T MATCH.";
-        write_message(conn_fd, prompt, sizeof(prompt) + 1);
+        if(send(conn_fd, prompt, strlen(prompt) + 1, 0) == -1)
+        {
+            printf("ERROR: cannot send message.");
+            close(conn_fd);
+            exit(1);
+        }
         return;
     }
 
 }
-
-void write_message(int conn_fd, char * message, size_t size)
-{
-    printf("sending message\n");
-    if ((send(conn_fd, message, size, 0)) == -1 )
-    {
-        printf("send failed.\n");
-        perror("send failed.");
-        return;
-    }
-}
-char * read_message(int conn_fd, char * buffer,  size_t num_bytes)
-{
-    char * buf[BUFFERSIZE];
-    memset(buffer, 0, BUFFERSIZE);
-    int r = 0;
-    if ((r = recv(conn_fd, buf ,BUFFERSIZE, 0)) == -1)
-    {
-        printf("recv failed.\n");
-        perror("recv failed.\n");
-        return (char*)"";
-    }
-    buffer[r] = '\0';
-    printf("received %d bytes\n", r);
-    return buffer;
-}
-
-int open_file(char * filename, int flags)
-{
-    int fd =0;
-    if ((fd =open(filename, flags)) == -1)
-    {
-        perror("failed to open file.");
-        exit(1);
-    }
-    return fd;
-}
-
-void close_file(int open_fd)
-{
-    if (close(open_fd) == -1)
-    {
-        perror("failed to close the file.");
-        exit(1);
-    }
-}
-
-
-
 
 
 

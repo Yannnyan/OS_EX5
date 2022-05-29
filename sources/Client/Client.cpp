@@ -77,13 +77,13 @@ int main(int argc, char *argv[])
     for(p = servinfo; p != NULL; p = p->ai_next) {
         if ((sockfd = socket(p->ai_family, p->ai_socktype,
                 p->ai_protocol)) == -1) {
-            perror("client: socket");
+            perror("[CLIENT] socket");
             continue;
         }
 
         if (connect(sockfd, p->ai_addr, p->ai_addrlen) == -1) {
             close(sockfd);
-            perror("client: connect");
+            perror("[CLIENT] connect");
             continue;
         }
 
@@ -91,13 +91,13 @@ int main(int argc, char *argv[])
     }
 
     if (p == NULL) {
-        fprintf(stderr, "client: failed to connect\n");
+        fprintf(stderr, "[CLIENT] failed to connect\n");
         return 2;
     }
 
     inet_ntop(p->ai_family, get_in_addr((struct sockaddr *)p->ai_addr),
             s, sizeof s);
-    printf("client: connecting to %s\n", s);
+    printf("[CLIENT] connecting to %s\n", s);
     freeaddrinfo(servinfo); // all done with this structure
     while(1)
     {
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
             perror("ERROR: cannot send the message");
             break;
         }
-
+        printf("[CLIENT] sent message.\n");
         if ((numbytes = recv(sockfd, buf, BUFFERSIZE-1, 0)) == -1) {
             perror("recv");
             break;
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
 
         buf[numbytes] = '\0';
 
-        printf("[CLIENT]: received '%s', number of bytes: %d\n",buf, numbytes);
+        printf("[CLIENT] received '%s', number of bytes: %d\n",buf, numbytes);
     }
     
     

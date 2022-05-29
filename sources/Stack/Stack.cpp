@@ -144,14 +144,13 @@ char * ex4::Stack::POP_SRC()
     if(!strcmp(current->getData(), "`"))
     {
         // stack only contains the head and the head can't be extracted.
-        printf("head\n");
         return (char *)"";
     }
     prev->setNext((str_Node *)nullptr);
     char * str = current->getData();
     char * ret = (char *) malloc(strlen(str)+1);
     strncpy(ret, str, strlen(str) + 1);
-    _free(current);
+    // _free(current);
     this->size -=1;
     return ret;
 }
